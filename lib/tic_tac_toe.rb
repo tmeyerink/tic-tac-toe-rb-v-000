@@ -55,7 +55,7 @@ def turn(board)
  input = gets.strip
  index = input_to_index(input)
  character = current_player(board)
- if valid_move?(board,index) 
+ if valid_move?(board,index)
    move(board, index, character)
    display_board(board)
  else
@@ -70,46 +70,25 @@ def won?(board)
 end
 
 def full?(board)
-  board.each do |position|
-    if position == " "
-      return false
-    end
- end
- true
+  board.all?{|character| character == "X" || character == "O"}
 end
 
 def draw?(board)
-  if full?(board) == true && won?(board) == false
-    return true
-  end
-  false
+  !won?(board) && full?(board)
 end
 
 def over?(board)
-  if won?(board) != false || draw?(board) == true
-    return true
-  end
-  false
+  won?(board) || draw(board) || full?(board)
 end
 
 def winner(board)
-  win_combination = won?(board)
-  if over?(board) == true && draw?(board) == false
-    win_index = win_combination[0]
-    letter = board[win_index]
-    return letter
+  if win_move = won?(board)
+    board[win_move[0]]
   end
 end
 
 def play(board)
-  until over?(board) == true
+  until over?(board) == true || won?(board) != false
     turn(board)
   end
-
-  if won?(board) != false
-    winner = winner(board)
-    puts "Congratulations #{winner}!"
-  else draw?(board) == true
-    puts "Cat's Game!"
-  end
-end
+  
