@@ -17,11 +17,11 @@ def display_board(board)
 end
 
 def input_to_index(user_input)
-  user_input.to_i - 1  
+  user_input.to_i - 1
 end
 
-def move(board, index, current_player)
-  board[index] = current_player
+def move(board, index, character)
+  board[index] = character
 end
 
 def position_taken? (board, index)
@@ -29,40 +29,34 @@ def position_taken? (board, index)
 end
 
 def valid_move?(board, index)
-  if index < 0 || index > 8
-    return false
-  elsif position_taken?(board, index) == true
-    return false
-  end
-  true
+  index.between(0,8) && !position_taken?(board, index)
 end
 
 def turn_count(board)
-  turns = 0
-  board.each do |positon|
-    if position == "X" || position == "O"
-      turns +=1
+  turn_counter = 0
+  board.each do |index|
+    if index == "X" || index == "O"
+      turn_counter += 1
     end
   end
-  return turns
+  turn_counter
 end
 
 def current_player(board)
- turns = turn_count(board)
- if turns == 0 || turns % 2 == 0
-   return "X"
- else
-   return "O"
- end
+  if turn_count(board) % 2 == 0
+    return "X"
+  else
+    return "O"
+  end
 end
 
 def turn(board)
  puts "Please enter 1-9:"
- user_input = gets.strip
- index = input_to_index(user_input)
-
- if valid_move?(board,index) == true
-   move(board,index,player_token)
+ input = gets.strip
+ index = input_to_index(input)
+ character = current_player(board)
+ if valid_move?(board,index) 
+   move(board, index, character)
    display_board(board)
  else
    turn(board)
@@ -70,22 +64,9 @@ def turn(board)
 end
 
 def won?(board)
-  WIN_COMBINATIONS.each do |win_combination|
-    win_index_1 = win_combination[0]
-    win_index_2 = win_combination[1]
-    win_index_3 = win_combination[2]
-
-    position_1 = board[win_index_1]
-    position_2 = board[win_index_2]
-    position_3 = board[win_index_3]
-
-    if position_1 == "X" && position_2 == "X" && position_3 == "X"
-      return win_combination
-    elsif position_1 == "O" && position_2 == "O" && position_3 == "O"
-      return win_combination
-    end
- end
- false
+  WIN_COMBINATIONS.detect do |win_move|
+    board[win_move[0]] == board[win_move[1]] && board[win_move[1]] == board[win_move[2]] && position_taken?(board, win_move[0])
+  end
 end
 
 def full?(board)
